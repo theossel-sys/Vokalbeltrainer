@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unit 3 Vokabel-Trainer</title>
+    <title>Vokabel-Trainer für Marlene</title>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
         .quiz-container { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; }
@@ -78,4 +78,66 @@
         { de: "Ich nehme an / Ich schätze", en: "I guess" }, { de: "Koch / Köchin", en: "chef" }, { de: "Füllung", en: "filling" },
         { de: "lecker / köstlich", en: "delicious" }, { de: "Soße", en: "sauce" }, { de: "ekelhaft / widerlich", en: "disgusting" },
         { de: "schmecken", en: "to taste" }, { de: "Essig", en: "vinegar" }, { de: "Senf", en: "mustard" },
-        { de: "Minze",
+        { de: "Minze", en: "mint" }, { de: "Preiselbeere", en: "cranberry" }, { de: "Truthahn", en: "turkey" },
+        { de: "traditionell", en: "traditional" }, { de: "aufhängen", en: "to hang up" }, { de: "Wäsche", en: "laundry" },
+        { de: "staubsaugen", en: "to vacuum" }, { de: "Herzlichen Glückwunsch", en: "Congratulations" }, { de: "Fahrkarte / Ticket", en: "ticket" },
+        // Story & Feedback
+        { de: "Rückmeldung", en: "feedback" }, { de: "Blickkontakt herstellen", en: "to make eye contact" }, { de: "Kriterium", en: "criterion" },
+        { de: "wichtig / relevant für", en: "relevant to" }, { de: "Gliederung / Struktur", en: "structure" }, { de: "erstens", en: "firstly" },
+        { de: "zweitens", en: "secondly" }, { de: "endlich / schließlich", en: "finally" }, { de: "Einleitung", en: "introduction" },
+        { de: "Feld (Schach)", en: "square" }, { de: "Sekunde", en: "second" }, { de: "schummeln / mogeln", en: "to cheat" },
+        { de: "anklopfen", en: "to knock" }, { de: "Enkelin", en: "granddaughter" }, { de: "Enkel", en: "grandson" },
+        { de: "Gemälde", en: "painting" }, { de: "Landschaft", en: "countryside" }, { de: "Es ist schade", en: "it's a pity" },
+        { de: "berühren", en: "to touch" }, { de: "wunderbar", en: "wonderful" }, { de: "werden (dunkel/kalt)", en: "to turn" },
+        { de: "Mond", en: "moon" }, { de: "oben / darüber", en: "above" }, { de: "Stern", en: "star" },
+        { de: "gähnen", en: "to yawn" }, { de: "verschwinden", en: "to disappear" }, { de: "reiben", en: "to rub" },
+        { de: "jemandem einen Streich spielen", en: "to play a trick on sb." }, { de: "frech / ungezogen", en: "naughty" },
+        { de: "schrecklich", en: "awful" }, { de: "technisch", en: "technical" }, { de: "Jedenfalls / Wie dem auch sei", en: "anyway" }
+    ];
+
+    let currentVocab;
+    let score = 0;
+    let totalAsked = 0;
+
+    function nextWord() {
+        currentVocab = vocab[Math.floor(Math.random() * vocab.length)];
+        document.getElementById('german-word').innerText = currentVocab.de;
+        const input = document.getElementById('answer-input');
+        input.value = '';
+        input.focus();
+        document.getElementById('feedback').innerText = '';
+    }
+
+    function checkAnswer() {
+        const inputField = document.getElementById('answer-input');
+        const input = inputField.value.trim().toLowerCase();
+        const feedback = document.getElementById('feedback');
+        const correctAns = currentVocab.en.toLowerCase();
+
+        // Akzeptiert Antworten mit oder ohne "to " am Anfang
+        const isCorrect = (input === correctAns || 
+                           input === correctAns.replace('to ', '') || 
+                           (correctAns.startsWith('to ') && input === correctAns.substring(3)));
+
+        totalAsked++;
+        document.getElementById('total').innerText = totalAsked;
+
+        if (isCorrect) {
+            feedback.innerHTML = `<span class="correct">Richtig!</span><br><small>${currentVocab.de} = ${currentVocab.en}</small>`;
+            score++;
+            document.getElementById('score').innerText = score;
+            setTimeout(nextWord, 1200);
+        } else {
+            feedback.innerHTML = `<span class="wrong">Falsch.</span><br>Richtig ist: <b>${currentVocab.en}</b>`;
+        }
+    }
+
+    document.getElementById('answer-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAnswer();
+    });
+
+    nextWord();
+</script>
+
+</body>
+</html>
