@@ -5,30 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unit 3 Vokabel-Trainer</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .quiz-container { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; }
-        h1 { color: #2c3e50; font-size: 1.5rem; margin-bottom: 1.5rem; }
-        .word-to-translate { font-size: 1.8rem; font-weight: bold; color: #3498db; margin-bottom: 1rem; }
-        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; outline: none; transition: border-color 0.3s; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .quiz-container { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; }
+        h1 { color: #2c3e50; margin-bottom: 0.5rem; font-size: 1.4rem; }
+        .subtitle { color: #7f8c8d; margin-bottom: 1.5rem; font-size: 0.9rem; }
+        .word-to-translate { font-size: 1.6rem; font-weight: bold; color: #3498db; margin: 1.5rem 0; min-height: 2em; display: flex; align-items: center; justify-content: center; }
+        input { width: 100%; padding: 15px; border: 2px solid #dcdde1; border-radius: 10px; font-size: 1.1rem; box-sizing: border-box; outline: none; transition: border-color 0.3s; }
         input:focus { border-color: #3498db; }
         .btn-container { margin-top: 1.5rem; display: flex; gap: 10px; }
-        button { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: background 0.3s; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: opacity 0.2s; }
         .check-btn { background: #27ae60; color: white; }
-        .check-btn:hover { background: #219150; }
         .skip-btn { background: #95a5a6; color: white; }
-        .feedback { margin-top: 1.5rem; font-weight: bold; min-height: 1.2em; }
+        button:active { opacity: 0.8; }
+        .feedback { margin-top: 1.5rem; font-weight: bold; min-height: 3em; line-height: 1.4; }
         .correct { color: #27ae60; }
         .wrong { color: #e74c3c; }
-        .stats { margin-top: 1rem; font-size: 0.9rem; color: #7f8c8d; }
+        .stats { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee; color: #7f8c8d; display: flex; justify-content: space-around; }
     </style>
 </head>
 <body>
 
 <div class="quiz-container">
-    <h1>Unit 3: Vocabulary Quiz</h1>
+    <h1>Unit 3: Helping out</h1>
+    <div class="subtitle">Interaktiver Vokabeltrainer</div>
     <div id="direction">Übersetze ins Englische:</div>
     <div class="word-to-translate" id="german-word">Lade...</div>
-    <input type="text" id="answer-input" placeholder="Deine Antwort hier..." autocomplete="off">
+    <input type="text" id="answer-input" placeholder="Englische Übersetzung..." autocomplete="off" autofocus>
     
     <div class="btn-container">
         <button class="skip-btn" onclick="nextWord()">Überspringen</button>
@@ -36,67 +38,44 @@
     </div>
 
     <div id="feedback" class="feedback"></div>
-    <div class="stats">Richtig: <span id="score">0</span></div>
+    
+    <div class="stats">
+        <span>Richtig: <b id="score">0</b></span>
+        <span>Gelernt: <b id="total">0</b></span>
+    </div>
 </div>
 
 <script>
     const vocab = [
-        { de: "gemeinnützige Arbeit", en: "community service" },
-        { de: "vermitteln", en: "to mediate" },
-        { de: "verantwortlich sein für", en: "to be in charge of" },
-        { de: "Bewohner", en: "resident" },
-        { de: "sich konzentrieren auf", en: "to focus on" },
-        { de: "Hausarbeit / Pflicht", en: "chore" },
-        { de: "den Tisch decken", en: "to set the table" },
-        { de: "ekelhaft / widerlich", en: "disgusting" },
-        { de: "köstlich", en: "delicious" },
-        { de: "jemandem einen Streich spielen", en: "to play a trick on sb." },
-        { de: "frech / ungezogen", en: "naughty" },
-        { de: "schwierig", en: "difficult" },
-        { de: "Marmelade", en: "jam" },
-        { de: "Zukunft", en: "future" },
-        { de: "Müll", en: "rubbish" },
-        { de: "schummeln / betrügen", en: "to cheat" },
-        { de: "verschwinden", en: "to disappear" },
-        { de: "fremd / ausländisch", en: "foreign" }
-    ];
-
-    let currentVocab;
-    let score = 0;
-
-    function nextWord() {
-        currentVocab = vocab[Math.floor(Math.random() * vocab.length)];
-        document.getElementById('german-word').innerText = currentVocab.de;
-        document.getElementById('answer-input').value = '';
-        document.getElementById('feedback').innerText = '';
-        document.getElementById('answer-input').focus();
-    }
-
-    function checkAnswer() {
-        const input = document.getElementById('answer-input').value.trim().toLowerCase();
-        const feedback = document.getElementById('feedback');
-        const correctAns = currentVocab.en.toLowerCase();
-
-        if (input === correctAns || input === correctAns.replace('to ', '')) {
-            feedback.innerText = "Richtig! Well done!";
-            feedback.className = "feedback correct";
-            score++;
-            document.getElementById('score').innerText = score;
-            setTimeout(nextWord, 1500);
-        } else {
-            feedback.innerText = `Leider falsch. Richtig wäre: ${currentVocab.en}`;
-            feedback.className = "feedback wrong";
-        }
-    }
-
-    // Enter-Taste zum Bestätigen
-    document.getElementById('answer-input').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') checkAnswer();
-    });
-
-    // Start
-    nextWord();
-</script>
-
-</body>
-</html>
+        // Intro & S. 74-75
+        { de: "aushelfen", en: "to help out" }, { de: "Rettungsboot", en: "lifeboat" }, { de: "Krankenhaus", en: "hospital" },
+        { de: "Blindenführhund", en: "guide dog" }, { de: "Elefant", en: "elephant" }, { de: "Schutzgebiet", en: "sanctuary" },
+        { de: "füttern", en: "to feed" }, { de: "vermitteln", en: "to translate" }, { de: "vermitteln (bei Streit)", en: "to mediate" },
+        // Part A
+        { de: "gemeinnützige Arbeit", en: "community service" }, { de: "Gemeinde / Gemeinschaft", en: "community" },
+        { de: "Dienst / Service", en: "service" }, { de: "Altersheim / Seniorenheim", en: "old people's home" },
+        { de: "sich eintragen", en: "to sign up" }, { de: "Welche Art von...?", en: "what kind of" }, { de: "Kumpel", en: "buddy" },
+        { de: "weiterführende Schule", en: "secondary school" }, { de: "schwierig", en: "difficult" }, { de: "Generation", en: "generation" },
+        { de: "Zeitung", en: "newspaper" }, { de: "Dolmetscher", en: "interpreter" }, { de: "gut (Adverb)", en: "well" },
+        { de: "fremd / ausländisch", en: "foreign" }, { de: "hausgemacht", en: "home-made" }, { de: "Marmelade", en: "jam" },
+        { de: "Schaukel", en: "swing" }, { de: "Zukunft", en: "future" }, { de: "möglich", en: "possible" },
+        { de: "unmöglich", en: "impossible" }, { de: "Option / Wahlmöglichkeit", en: "option" }, { de: "insgesamt", en: "altogether" },
+        { de: "Chance / Gelegenheit", en: "chance" }, { de: "sich konzentrieren auf", en: "to focus on" }, { de: "Sehr geehrte Damen und Herren", en: "Dear Sir or Madam" },
+        // Part B
+        { de: "verantwortlich sein für", en: "to be in charge of" }, { de: "Rest", en: "rest" }, { de: "zehnminütiger Spaziergang", en: "a ten-minute walk" },
+        { de: "begrüßen / willkommen heißen", en: "to welcome" }, { de: "herzlich", en: "warmly" }, { de: "Bewohner", en: "resident" },
+        { de: "Rose", en: "rose" }, { de: "pflanzen", en: "to plant" }, { de: "Blumenbeet", en: "flower bed" },
+        { de: "Unkraut", en: "weed" }, { de: "jäten", en: "to weed" }, { de: "herausreißen", en: "to pull up" },
+        { de: "weitermachen / fortfahren", en: "to go on" }, { de: "Löwenzahn", en: "dandelion" }, { de: "hart arbeiten", en: "to work hard" },
+        { de: "stolz auf", en: "proud of" }, { de: "Vogel", en: "bird" }, { de: "Rotkehlchen", en: "robin" },
+        { de: "Luft", en: "air" }, { de: "Dreck", en: "dirt" }, { de: "Müll", en: "rubbish" }, { de: "glänzend", en: "shiny" },
+        { de: "Ring", en: "ring" }, { de: "aufleuchten", en: "to light up" }, { de: "verloren", en: "lost" },
+        { de: "für immer", en: "for ever" }, { de: "anstelle von / statt", en: "instead of" },
+        // Part C
+        { de: "(lästige) Hausarbeit / Pflicht", en: "chore" }, { de: "zweimal", en: "twice" }, { de: "einmal", en: "once" },
+        { de: "ausräumen / leeren", en: "to empty" }, { de: "Spülmaschine", en: "dishwasher" }, { de: "scharf", en: "sharp" },
+        { de: "Messer", en: "knife" }, { de: "Messer (Mehrzahl)", en: "knives" }, { de: "den Tisch decken", en: "to set the table" },
+        { de: "Ich nehme an / Ich schätze", en: "I guess" }, { de: "Koch / Köchin", en: "chef" }, { de: "Füllung", en: "filling" },
+        { de: "lecker / köstlich", en: "delicious" }, { de: "Soße", en: "sauce" }, { de: "ekelhaft / widerlich", en: "disgusting" },
+        { de: "schmecken", en: "to taste" }, { de: "Essig", en: "vinegar" }, { de: "Senf", en: "mustard" },
+        { de: "Minze",
